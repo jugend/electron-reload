@@ -14,6 +14,9 @@ module.exports = (glob, options) => {
   let config = require(path.join(appPath, 'package.json'))
   let mainFile = path.join(appPath, config.main)
 
+  let mainGlob = options.mainGlob || mainFile
+  delete options.mainGlob
+
   // Watch everything but the node_modules folder and main file
   // main file changes are only effective if hard reset is possible
   let opts = Object.assign({
@@ -49,7 +52,7 @@ module.exports = (glob, options) => {
   // A hard reset is only done when the main file has changed
   let eXecutable = options.electron
   if (eXecutable && fs.existsSync(eXecutable)) {
-    chokidar.watch(mainFile).on('change', () => {
+    chokidar.watch(mainGlob).on('change', () => {
       // Detaching child is useful when in Windows to let child
       // live after the parent is killed
       let child = spawn(eXecutable, [appPath], {
